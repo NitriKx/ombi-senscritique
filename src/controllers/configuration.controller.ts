@@ -1,17 +1,27 @@
-import {Controller, Get, HttpException, HttpStatus, Post, Req} from '@nestjs/common';
+import {Body, Controller, Get, HttpException, HttpStatus, Logger, Post, Req} from '@nestjs/common';
 import {Request} from "express";
-import {SynchronizationWorkerService} from "../service/synchronization-worker.service";
+import {ConfigurationService} from "../service/configuration.service";
+import {ConfigurationUpdateDTO} from "../dto/configuration.dto";
 
 @Controller("configuration")
 export class ConfigurationController {
-  constructor(private synchronizationWorkerService: SynchronizationWorkerService) {}
+  private readonly logger = new Logger(typeof ConfigurationController);
+
+  constructor(private configurationService: ConfigurationService) {}
+
+  @Get()
+  async getConfiguration(@Req() request: Request) {
+    this.logger.debug("Fetching configuration...")
+    return await this.configurationService.get();
+  }
 
   @Post()
-  setInterval(@Req() request: Request): string {
-    const cron = request.body.cron as string | undefined;
-    if (cron) {
-      this.synchronizationWorkerService.updateIntervalCRON(cron);
-      return "Scheduler as been updated";
+  setInterval(@Body() configuration: ConfigurationUpdateDTO) {
+    if (configuration) {
+      this.configurationService.update(configuration);
+      return {
+        message: "Scheduler as been updated"
+      };
     } else {
       throw new HttpException("Missing cron parameter", HttpStatus.BAD_REQUEST);
     }

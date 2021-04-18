@@ -1,14 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ConfigurationController } from './controllers/configuration.controller';
-import { SynchronizationWorkerService } from './service/synchronization-worker.service';
 import { ScheduleModule } from "@nestjs/schedule";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { ConfigurationService } from "./service/configuration.service";
-import {ConfigModule, ConfigService} from "@nestjs/config";
-import { OmbiConfiguration } from "./orm/ombi-configuration.model";
-import { SenscritiqueConfiguration } from "./orm/senscritique-configuration.model";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import configuration from "./config/configuration";
-import {SequelizeModule} from "@nestjs/sequelize";
+import { SequelizeModule } from "@nestjs/sequelize";
+import {SynchronizationModule} from "./modules/synchronization.module";
 
 @Module({
   imports: [
@@ -18,14 +13,15 @@ import {SequelizeModule} from "@nestjs/sequelize";
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         dialect: 'sqlite',
-        database: `${configService.get("configurationFolder")}/data/line.sqlite`,
-        entities: [OmbiConfiguration, SenscritiqueConfiguration],
+        database: `${configService.get("configurationFolder")}/data/db.sqlite`,
         synchronize: true,
+        autoLoadModels: true,
       }),
       inject: [ConfigService],
     }),
+    SynchronizationModule
   ],
-  controllers: [ConfigurationController],
-  providers: [ConfigurationService, SynchronizationWorkerService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

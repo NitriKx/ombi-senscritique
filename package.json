@@ -26,14 +26,14 @@
     "@nestjs/platform-express": "^7.6.15",
     "@nestjs/schedule": "^0.4.3",
     "@nestjs/sequelize": "^0.2.0",
-    "@nestjs/typeorm": "^7.1.5",
+    "axios": "^0.21.1",
+    "javascript-stringify": "^2.1.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0",
-    "sqlite3": "^5.0.2",
-    "typeorm": "^0.2.32"
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",
