@@ -11,9 +11,9 @@ export class OmbiClient {
         })
     }
 
-    public async searchMovie(searchTerms: string) {
+    public async searchMovies(searchTerms: string) {
         const response = await this.client.get(`/api/v1/Search/movie/${querystring.escape(searchTerms)}`)
-        return response.data[0]
+        return response.data
     }
 
 }

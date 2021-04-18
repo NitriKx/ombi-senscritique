@@ -3,7 +3,7 @@ import {Column, Model, Table} from "sequelize-typescript";
 @Table
 export class Configuration extends Model {
     @Column
-    scheduling: string;
+    scheduling?: string;
 
     @Column
     ombiUrl?: string;

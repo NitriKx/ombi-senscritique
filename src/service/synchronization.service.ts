@@ -2,37 +2,52 @@ import {Injectable, Logger} from '@nestjs/common';
 import {SchedulerRegistry} from "@nestjs/schedule";
 import {CronJob} from "cron";
 import {OmbiClient} from "./clients/ombi/OmbiClient";
+import {ConfigurationService} from "./configuration.service";
+import {OnEvent} from "@nestjs/event-emitter";
+import {Configuration} from "../orm/configuration.model";
+import {SensCritiqueClient} from "./clients/senscritique/SensCritiqueClient";
 
 @Injectable()
 export class SynchronizationService {
   private static readonly CRON_NAME = "synchronization-job";
 
   private readonly logger = new Logger(typeof SynchronizationService);
-  private intervalCron: string;
-  private ombiClient: OmbiClient;
+  private ombiClient: OmbiClient | undefined;
+  private sensCritiqueClient: SensCritiqueClient | undefined;
 
-  constructor(private schedulerRegistry: SchedulerRegistry) {
-    this.intervalCron = "0,30 * * * * *";
-    this.updateJobScheduling();
-    this.ombiClient = new OmbiClient("https://ombi.p0i.re", "22cb146b108c46ef8cd467f137255dc3");
+  constructor(private configurationService: ConfigurationService, private schedulerRegistry: SchedulerRegistry) {
+    this.init()
   }
 
-  public updateIntervalCRON(newIntervalCRON: string) {
-    this.intervalCron = newIntervalCRON;
-    this.updateJobScheduling();
+  private async init() {
+    this.onConfigurationChange(await this.configurationService.get());
   }
 
-  public synchroniseOmbi() {
-    const title = this.ombiClient.searchMovie("Le seigneur des anneaux")[0].title;
-    this.logger.log(`Movie found ${title}`);
+  @OnEvent("configuration.*", { async: true })
+  public async onConfigurationChange(newConfiguration: Configuration): Promise<void> {
+    const configuration = await this.configurationService.get();
+    if (configuration.scheduling) {
+      this.updateJobScheduling(configuration.scheduling);
+      if (configuration.ombiUrl && configuration.ombiApiKey) {
+        this.ombiClient = new OmbiClient(configuration.ombiUrl, configuration.ombiApiKey);
+      }
+      if (configuration.sensCritiqueUserEmail && configuration.sensCritiqueUserPassword) {
+        this.sensCritiqueClient = new SensCritiqueClient(configuration.sensCritiqueUserEmail, configuration.sensCritiqueUserPassword);
+      }
+    }
+    return;
   }
 
-  public getIntervalCRON() {
-    return this.intervalCron;
+  public async synchroniseOmbi() {
+    if (this.ombiClient && this.sensCritiqueClient) {
+      const movies = await this.ombiClient.searchMovies("Le seigneur des anneaux");
+      this.logger.log(`Movie found ${movies[0].title}`);
+      const result = await this.sensCritiqueClient.getUserId();
+    }
   }
 
-  private updateJobScheduling() {
-    const job = new CronJob(this.intervalCron, () => {
+  private updateJobScheduling(intervalCron: string) {
+    const job = new CronJob(intervalCron, () => {
       this.logger.warn(`Tick!`);
     });
 
@@ -45,7 +60,7 @@ export class SynchronizationService {
       this.logger.log("No previous CRON job registered");
     }
 
-    this.logger.log(`Creating new CRON job with schedule ${this.intervalCron}...`);
+    this.logger.log(`Creating new CRON job...`);
     this.schedulerRegistry.addCronJob(SynchronizationService.CRON_NAME, job);
     job.start();
   }

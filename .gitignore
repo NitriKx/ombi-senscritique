@@ -396,3 +396,7 @@ Temporary Items
 # Local
 .env
 dist
+
+
+src/**/*.d.ts
+src/**/*.js

@@ -1,8 +1,7 @@
 import {Injectable, Logger} from '@nestjs/common';
 import { Configuration } from "../orm/configuration.model";
-import { SynchronizationService } from "./synchronization.service";
 import {InjectModel} from "@nestjs/sequelize";
-import {Sequelize} from "sequelize-typescript";
+import {EventEmitter2} from "@nestjs/event-emitter";
 import {stringify} from "javascript-stringify";
 import {ConfigurationUpdateDTO} from "../dto/configuration.dto";
 
@@ -12,10 +11,9 @@ export class ConfigurationService {
   private readonly logger = new Logger(typeof ConfigurationService);
 
   constructor(@InjectModel(Configuration) private configurationModel: typeof Configuration,
-              private sequelize: Sequelize,
-              private synchronizationService: SynchronizationService) {}
+              private eventEmitter: EventEmitter2) {}
 
-  public async get() {
+  public async get(): Promise<Configuration> {
     const configurations = await this.configurationModel.findAll({order: [["createdAt", "DESC"]], limit: 1});
     if (configurations && configurations.length > 0) {
       const configuration = configurations[0];
@@ -29,7 +27,9 @@ export class ConfigurationService {
 
   public async update(newConfiguration: ConfigurationUpdateDTO) {
     const configuration = Configuration.build(newConfiguration);
-    return await configuration.save();
+    const result = await configuration.save();
+    this.eventEmitter.emit('configuration.update', result);
+    return result;
   }
 
   private getDefaultConfiguration() {

@@ -4,7 +4,7 @@ import {ConfigurationService} from "../service/configuration.service";
 import {ConfigurationUpdateDTO} from "../dto/configuration.dto";
 import {SynchronizationService} from "../service/synchronization.service";
 
-@Controller("ondemand-synchronization")
+@Controller("ondemand-sync")
 export class OndemandSynchronizationController {
   private readonly logger = new Logger(typeof OndemandSynchronizationController);
 
