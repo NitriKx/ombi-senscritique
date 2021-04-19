@@ -24,6 +24,12 @@ export class OmbiClient {
         return response.data
     }
 
+    public async searchTVShows(searchTerm: string) {
+        this.logger.debug(`Searching TV Shows ${searchTerm}...`);
+        const response = await this.client.get(`Search/tv/${querystring.escape(searchTerm)}`);
+        return response.data
+    }
+
     public async requestMovie(theMovieDbId: string) {
         this.logger.debug(`Requesting movie ${theMovieDbId}...`);
         const response = await this.client.post(`Request/movie`, {

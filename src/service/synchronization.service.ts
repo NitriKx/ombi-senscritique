@@ -49,6 +49,13 @@ export class SynchronizationService {
         // Await here to avoid spamming the Ombi instance
         await this.searchMovieAndRequestItIfNeeded(wishedMovie);
       }
+
+      const wishedTVShows = await this.sensCritiqueClient.listWishes(SensCritiqueUniverse.TV_SHOW);
+      this.logger.log(`Found ${wishedTVShows.length} TV Shows wished on SensCritique`)
+      for (const wishedTVShow of wishedTVShows) {
+        // Await here to avoid spamming the Ombi instance
+        await this.searchTVShowAndRequestItIfNeeded(wishedTVShow);
+      }
     } else {
       this.logger.warn("Ombi or Senscritique client not ready. Aborting synchronization... Please ensure that you have finished the configuration.")
     }
@@ -70,10 +77,38 @@ export class SynchronizationService {
             this.logger.error(`Could not request movie ${betterMatchingMovie.title} (${betterMatchingMovie.theMovieDbId}) on Ombi: ${err}`)
           });
         } else {
-          this.logger.log(`Movie ${betterMatchingMovie.title} has been already requested`);
+          if (betterMatchingMovie.requested || betterMatchingMovie.approved) {
+            this.logger.log(`Movie ${betterMatchingMovie.title} has been already requested`);
+          } else if (betterMatchingMovie.available) {
+            this.logger.log(`Movie ${betterMatchingMovie.title} is already available`);
+          }
         }
       } else {
         this.logger.warn(`Could not find movie ${wishedMovie.title} in Ombi`)
+      }
+    }
+  }
+
+  private async searchTVShowAndRequestItIfNeeded(wishedTVShow: Wish) {
+    if (this.ombiClient) {
+      const matchingTVShows = await this.ombiClient.searchTVShows(wishedTVShow.title);
+      if (matchingTVShows.length > 0) {
+        const betterMatchingTVShow = matchingTVShows[0];
+        this.logger.debug(`Better match is TV Show is ${betterMatchingTVShow.title}`);
+        if (!betterMatchingTVShow.requested && !betterMatchingTVShow.available && !betterMatchingTVShow.approved) {
+          this.logger.log(`Requesting TV Show ${betterMatchingTVShow.title} (${betterMatchingTVShow.theTvDbId}) on Ombi...`);
+          this.ombiClient.requestMovie(betterMatchingTVShow.theTvDbId).catch((err) => {
+            this.logger.error(`Could not request TV Show ${betterMatchingTVShow.title} (${betterMatchingTVShow.theTvDbId}) on Ombi: ${err}`)
+          });
+        } else {
+          if (betterMatchingTVShow.requested || betterMatchingTVShow.approved) {
+            this.logger.log(`TV Show ${betterMatchingTVShow.title} has been already requested`);
+          } else if (betterMatchingTVShow.available) {
+            this.logger.log(`TV Show ${betterMatchingTVShow.title} is already available`);
+          }
+        }
+      } else {
+        this.logger.warn(`Could not find TV Show ${wishedTVShow.title} in Ombi`)
       }
     }
   }
