@@ -4,4 +4,5 @@ export class ConfigurationUpdateDTO {
     readonly ombiApiKey?: string;
     readonly sensCritiqueUserEmail?: string;
     readonly sensCritiqueUserPassword?: string;
+    readonly languageCode?: string;
 }

@@ -16,4 +16,7 @@ export class Configuration extends Model {
 
     @Column
     sensCritiqueUserPassword?: string;
+
+    @Column
+    languageCode?: string;
 }

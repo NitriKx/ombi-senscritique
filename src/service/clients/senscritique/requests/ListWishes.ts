@@ -32,18 +32,19 @@ export interface ListWishesParams {
     offset?: number;
 }
 
+export interface Wish {
+    id: number;
+    title: string;
+}
+
 export class ListWishes {
     
     public static readonly doc = gql`
     query UserWishes($userId: Int!, $universe: String = "", $sortBy: String = "user_last_action", $limit: Int = 30, $offset: Int = 0) {
       user(id: $userId) {
-        id
-        myWishes(universe: $universe, sortBy: $sortBy, limit: $limit, offset: $offset) {
+        wishes(universe: $universe, sortBy: $sortBy, limit: $limit, offset: $offset) {
           id
           title
-          myWish
-          targetWish
-          universe
         }
       }
     }

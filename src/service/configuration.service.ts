@@ -34,7 +34,8 @@ export class ConfigurationService {
 
   private getDefaultConfiguration() {
     return new Configuration({
-      scheduling: "0 */5 * * * *"
+      scheduling: "0 */5 * * * *",
+      languageCode: "FR"
     })
   }
 }

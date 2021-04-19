@@ -1,5 +1,5 @@
 export enum SensCritiqueUniverse {
     MOVIE = "movie",
-    SERIES = "series",
+    TV_SHOW = "tvShow",
     ALL = "",
 }
