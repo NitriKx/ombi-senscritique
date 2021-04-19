@@ -8,6 +8,7 @@ import {Configuration} from "../orm/configuration.model";
 import {SensCritiqueClient} from "./clients/senscritique/SensCritiqueClient";
 import {SensCritiqueUniverse} from "./clients/senscritique/SensCritiqueUniverse";
 import {Wish} from "./clients/senscritique/requests/ListWishes";
+import moment from "moment";
 
 @Injectable()
 export class SynchronizationService {
@@ -45,7 +46,8 @@ export class SynchronizationService {
       const wishedMovies = await this.sensCritiqueClient.listWishes(SensCritiqueUniverse.MOVIE);
       this.logger.log(`Found ${wishedMovies.length} movies wished on SensCritique`)
       for (const wishedMovie of wishedMovies) {
-        this.searchMovieAndRequestItIfNeeded(wishedMovie);
+        // Await here to avoid spamming the Ombi instance
+        await this.searchMovieAndRequestItIfNeeded(wishedMovie);
       }
     } else {
       this.logger.warn("Ombi or Senscritique client not ready. Aborting synchronization... Please ensure that you have finished the configuration.")
@@ -54,7 +56,11 @@ export class SynchronizationService {
 
   private async searchMovieAndRequestItIfNeeded(wishedMovie: Wish) {
     if (this.ombiClient) {
-      const matchingMovies = await this.ombiClient.searchMovies(wishedMovie.title);
+      // Extract the year from the text release date (format: "21 juillet 2021")
+      moment.locale('fr')
+      const releaseYear = moment(wishedMovie.release_date, "DD MMMM YYYY").year()
+
+      const matchingMovies = await this.ombiClient.searchMovies(wishedMovie.title, releaseYear);
       if (matchingMovies.length > 0) {
         const betterMatchingMovie = matchingMovies[0];
         this.logger.debug(`Better match is movie ${betterMatchingMovie.title}`);

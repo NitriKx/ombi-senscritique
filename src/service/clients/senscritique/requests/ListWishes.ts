@@ -35,6 +35,7 @@ export interface ListWishesParams {
 export interface Wish {
     id: number;
     title: string;
+    release_date: string;
 }
 
 export class ListWishes {
@@ -45,6 +46,7 @@ export class ListWishes {
         wishes(universe: $universe, sortBy: $sortBy, limit: $limit, offset: $offset) {
           id
           title
+          release_date
         }
       }
     }
