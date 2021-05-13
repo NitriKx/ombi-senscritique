@@ -1,9 +1,9 @@
 {
   "name": "ombi-senscritique",
   "private": true,
-  "version": "1.0.0",
+  "version": "0.2.2",
   "description": "Synchronisation tool between SensCritique and Ombi",
-  "license": "MIT",
+  "license": "GPLV3",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
