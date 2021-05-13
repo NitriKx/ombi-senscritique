@@ -7,7 +7,9 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "docker:build": "nest build && cp package*.json dist/ && docker build . -t nitrikx/ombi-senscritique",
+    "docker:build": "GITHUB_REF=dev && npm run docker:build:ci",
+    "docker:build:ci": "nest build && cp package*.json dist/ && docker build . -t nitrikx/ombi-senscritique:${GITHUB_REF##*/} -t nitrikx/ombi-senscritique:latest",
+    "docker:publish": "docker image push --all-tags nitrikx/ombi-senscritique",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
