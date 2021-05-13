@@ -20,7 +20,7 @@ export class ConfigurationController {
     if (configuration) {
       this.configurationService.update(configuration);
       return {
-        message: "Scheduler as been updated"
+        message: "Scheduler has been updated"
       };
     } else {
       throw new HttpException("Missing cron parameter", HttpStatus.BAD_REQUEST);

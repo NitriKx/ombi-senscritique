@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv bash
+
+# permissions
+echo "[cont-init.d] Setting permissions this may take some time"
+chown -R abc:abc /config

@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bash
+
+cd /app/ombi-senscritique
+
+export CONFIGURATION_FOLDER=/config/
+
+exec \
+	s6-setuidgid abc \
+	node main.js -p 3582

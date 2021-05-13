@@ -17,7 +17,7 @@ import { EventEmitterModule } from "@nestjs/event-emitter";
       useFactory: (configService: ConfigService) => ({
         type: 'sqlite',
         dialect: 'sqlite',
-        database: `${configService.get("configurationFolder")}/data/db.sqlite`,
+        storage: `${configService.get("configurationFolder")}/db.sqlite`,
         synchronize: true,
         autoLoadModels: true,
       }),

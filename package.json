@@ -7,6 +7,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "docker:build": "nest build && cp package*.json dist/ && docker build . -t nitrikx/ombi-senscritique",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -36,7 +37,8 @@
     "senscritique-graphql-api": "^0.1.5",
     "sequelize": "^6.6.2",
     "sequelize-typescript": "^2.1.0",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "yargs": "^15.4.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^7.6.0",

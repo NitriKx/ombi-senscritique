@@ -400,3 +400,4 @@ dist
 
 src/**/*.d.ts
 src/**/*.js
+data/
