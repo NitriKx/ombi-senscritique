@@ -1,5 +1,8 @@
 # Ombi x Senscritique 
 
+[![Latest build](https://github.com/NitriKx/ombi-senscritique/actions/workflows/build.yml/badge.svg)](https://github.com/NitriKx/ombi-senscritique/actions/workflows/build.yml)
+[![Docker](https://github.com/NitriKx/ombi-senscritique/actions/workflows/build-docker-image.yml/badge.svg)](https://github.com/NitriKx/ombi-senscritique/actions/workflows/build-docker-image.yml)
+
 Request movies and tv shows wished on SensCritique on Ombi.
 
 Only user/password authentication is supported for now. 
